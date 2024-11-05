@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { Pool } from 'pg';
+import interestsRouter from './routes/interests';
 
 // Load environment variables
 dotenv.config();
@@ -36,6 +37,9 @@ if (process.env.NODE_ENV === 'development') {
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 }
+
+// API Routes
+app.use('/api/interests', interestsRouter);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
