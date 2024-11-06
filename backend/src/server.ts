@@ -1,8 +1,10 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { Pool } from 'pg';
 import interestsRouter from './routes/interests';
+import authRouter from './routes/auth';
+import { authenticateToken, optionalAuthenticateToken } from './middleware/auth';
 
 // Load environment variables
 dotenv.config();
@@ -25,9 +27,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware for development
 if (process.env.NODE_ENV === 'development') {
-  app.use((req: Request, res: Response, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     next();
   });
@@ -39,11 +41,17 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // API Routes
-app.use('/api/interests', interestsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/interests', optionalAuthenticateToken, interestsRouter);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'healthy' });
+});
+
+// Protected route example
+app.get('/api/protected', authenticateToken, (req: Request, res: Response) => {
+  res.json({ message: 'This is a protected route', userId: req.user?.userId });
 });
 
 // Handle SPA routing in production
@@ -54,7 +62,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: any) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
