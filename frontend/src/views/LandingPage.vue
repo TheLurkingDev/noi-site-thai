@@ -66,13 +66,6 @@
           {{ error }}
         </div>
 
-        <div class="social-signup">
-          <span class="or-divider">or sign up with</span>
-          <button class="social-btn facebook">
-            <i class="fab fa-facebook-f"></i>
-          </button>
-        </div>
-
         <div class="login-section">
           <p>Already have an account?</p>
           <router-link to="/login" class="login-btn">Login</router-link>
@@ -287,51 +280,6 @@ export default defineComponent({
 
     &:disabled {
       background: #ccc;
-    }
-  }
-}
-
-.social-signup {
-  margin-top: 2rem;
-  text-align: center;
-
-  .or-divider {
-    display: block;
-    color: #666;
-    margin-bottom: 1rem;
-    position: relative;
-
-    &::before,
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 30%;
-      height: 1px;
-      background: #ddd;
-    }
-
-    &::before {
-      left: 0;
-    }
-
-    &::after {
-      right: 0;
-    }
-  }
-
-  .social-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    background: #3b5998;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: scale(1.05);
     }
   }
 }
