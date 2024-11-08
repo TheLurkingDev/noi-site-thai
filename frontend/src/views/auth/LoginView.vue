@@ -1,11 +1,12 @@
 <template>
-  <div class="landing-page">
+  <div class="login-page">
     <nav class="top-nav">
       <div class="nav-brand">
-        <h1>Find Thai Dates</h1>
+        <router-link to="/" class="brand-link">
+          <h1>Find Thai Dates</h1>
+        </router-link>
       </div>
       <div class="nav-links">
-        <router-link to="/login" class="nav-link login">Log In</router-link>
         <router-link to="/register" class="nav-link signup"
           >Sign Up</router-link
         >
@@ -13,23 +14,13 @@
     </nav>
 
     <div class="content">
-      <div class="registration-panel">
-        <h2>Create an Account</h2>
+      <div class="login-panel">
+        <h2>Welcome Back</h2>
         <p class="subtitle">
-          Registering for this site is easy, just fill in the fields below and
-          we will get a new account set up for you in no time.
+          Sign in to your account to continue your journey to finding love.
         </p>
-        <form @submit.prevent="handleSubmit" class="registration-form">
-          <div class="form-group">
-            <input
-              type="text"
-              v-model="form.username"
-              placeholder="Username"
-              required
-              class="form-input"
-            />
-          </div>
 
+        <form @submit.prevent="handleSubmit" class="login-form">
           <div class="form-group">
             <input
               type="email"
@@ -40,7 +31,7 @@
             />
           </div>
 
-          <div class="form-group password-group">
+          <div class="form-group">
             <input
               type="password"
               v-model="form.password"
@@ -48,17 +39,20 @@
               required
               class="form-input"
             />
-            <input
-              type="password"
-              v-model="form.confirmPassword"
-              placeholder="Confirm Password"
-              required
-              class="form-input"
-            />
           </div>
 
-          <button type="submit" class="signup-btn" :disabled="loading">
-            {{ loading ? "Creating Account..." : "Sign Up" }}
+          <div class="form-options">
+            <label class="remember-me">
+              <input type="checkbox" v-model="form.rememberMe" />
+              <span>Remember me</span>
+            </label>
+            <router-link to="/forgot-password" class="forgot-password">
+              Forgot Password?
+            </router-link>
+          </div>
+
+          <button type="submit" class="login-btn" :disabled="loading">
+            {{ loading ? "Signing in..." : "Sign In" }}
           </button>
         </form>
 
@@ -66,28 +60,23 @@
           {{ error }}
         </div>
 
-        <div class="social-signup">
-          <span class="or-divider">or sign up with</span>
+        <div class="social-login">
+          <span class="or-divider">or sign in with</span>
           <button class="social-btn facebook">
             <i class="fab fa-facebook-f"></i>
           </button>
         </div>
 
-        <div class="login-section">
-          <p>Already have an account?</p>
-          <router-link to="/login" class="login-btn">Login</router-link>
-        </div>
-
-        <div class="recent-members">
-          <h3>Latest registered members</h3>
-          <div class="member-avatars">
-            <!-- Add member avatars here -->
-          </div>
+        <div class="register-section">
+          <p>Don't have an account?</p>
+          <router-link to="/register" class="register-btn">
+            Create Account
+          </router-link>
         </div>
       </div>
 
       <div class="tagline">
-        <h2>Take that step. Find your <span class="highlight">Date</span>.</h2>
+        <h2>Welcome Back to Your <span class="highlight">Journey</span></h2>
       </div>
     </div>
   </div>
@@ -97,41 +86,33 @@
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 
-interface RegistrationForm {
-  username: string;
+interface LoginForm {
   email: string;
   password: string;
-  confirmPassword: string;
+  rememberMe: boolean;
 }
 
 export default defineComponent({
-  name: "LandingPage",
+  name: "LoginView",
   setup() {
     const router = useRouter();
     const loading = ref(false);
     const error = ref("");
-    const form = ref<RegistrationForm>({
-      username: "",
+    const form = ref<LoginForm>({
       email: "",
       password: "",
-      confirmPassword: "",
+      rememberMe: false,
     });
 
     const handleSubmit = async () => {
-      if (form.value.password !== form.value.confirmPassword) {
-        error.value = "Passwords do not match";
-        return;
-      }
-
       loading.value = true;
       error.value = "";
 
       try {
-        // Here we'll add the registration logic later
-        await router.push("/profile-setup");
+        // Here we'll add the login logic later
+        await router.push("/profile");
       } catch (err) {
-        error.value =
-          err instanceof Error ? err.message : "Registration failed";
+        error.value = err instanceof Error ? err.message : "Login failed";
       } finally {
         loading.value = false;
       }
@@ -148,7 +129,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.landing-page {
+.login-page {
   min-height: 100vh;
   background: url("@/assets/images/site-background.png") no-repeat center center
     fixed;
@@ -180,10 +161,14 @@ export default defineComponent({
   padding: 1rem 2rem;
   background: rgba(0, 0, 0, 0.2);
 
-  .nav-brand h1 {
-    color: white;
-    margin: 0;
-    font-size: 1.5rem;
+  .brand-link {
+    text-decoration: none;
+
+    h1 {
+      color: white;
+      margin: 0;
+      font-size: 1.5rem;
+    }
   }
 
   .nav-links {
@@ -192,16 +177,9 @@ export default defineComponent({
 
     .nav-link {
       text-decoration: none;
-      color: white;
       padding: 0.5rem 1rem;
       border-radius: 4px;
       transition: all 0.3s ease;
-
-      &.login {
-        &:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
-      }
 
       &.signup {
         background: white;
@@ -227,7 +205,7 @@ export default defineComponent({
   min-height: calc(100vh - 80px);
 }
 
-.registration-panel {
+.login-panel {
   background: white;
   padding: 2rem;
   border-radius: 8px;
@@ -246,7 +224,7 @@ export default defineComponent({
   }
 }
 
-.registration-form {
+.login-form {
   .form-group {
     margin-bottom: 1rem;
   }
@@ -265,12 +243,36 @@ export default defineComponent({
     }
   }
 
-  .password-group {
-    display: grid;
-    gap: 1rem;
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #666;
+      cursor: pointer;
+
+      input[type="checkbox"] {
+        cursor: pointer;
+      }
+    }
+
+    .forgot-password {
+      color: #0066ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
-  .signup-btn {
+  .login-btn {
     width: 100%;
     padding: 0.75rem;
     background: #ff1493;
@@ -291,7 +293,7 @@ export default defineComponent({
   }
 }
 
-.social-signup {
+.social-login {
   margin-top: 2rem;
   text-align: center;
 
@@ -336,19 +338,18 @@ export default defineComponent({
   }
 }
 
-.login-section {
+.register-section {
   margin-top: 2rem;
   text-align: center;
-  padding: 1rem 0;
+  padding-top: 1rem;
   border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
 
   p {
     color: #666;
     margin-bottom: 0.5rem;
   }
 
-  .login-btn {
+  .register-btn {
     display: inline-block;
     padding: 0.5rem 2rem;
     background: #0066ff;
@@ -364,19 +365,10 @@ export default defineComponent({
   }
 }
 
-.recent-members {
-  margin-top: 2rem;
-
-  h3 {
-    color: #333;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-
-  .member-avatars {
-    display: flex;
-    gap: 0.5rem;
-  }
+.error-message {
+  color: #dc3545;
+  text-align: center;
+  margin-top: 1rem;
 }
 
 .tagline {
@@ -403,7 +395,7 @@ export default defineComponent({
     padding: 1rem;
   }
 
-  .registration-panel {
+  .login-panel {
     width: 100%;
     max-width: 400px;
   }
